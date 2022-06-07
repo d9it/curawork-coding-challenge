@@ -125,15 +125,18 @@ class ConnectionController extends Controller
         try {
             $requestConnection = ConnectionRequest::whereId($request->requestId)->first();
             DB::beginTransaction();
-            $connectionArray = [[
+            $connectionArray = [];
+            $connectionArray[] =[
                 'user_id' => Auth::id(),
                 'connection_id' => $requestConnection->request_from
-            ],
-            [
+            ];
+            $connectionArray[] =[
                 'connection_id' => Auth::id(),
                 'user_id' => $requestConnection->request_from
-            ]];
-            Connection::create($connectionArray);
+            ];
+            foreach ($connectionArray as $key => $value) {
+                Connection::create($value);
+            }
             DB::commit();
             $requestConnection->delete();
             return response()->json([
